@@ -1,35 +1,55 @@
 import { useContext, useEffect, useState } from "react"
-import { UserContext } from "./home"
+import { UserContext } from "./Home"
 import { Button, Container, Modal, Paper, TextField, Typography } from "@mui/material"
+import axios from "axios"
 
-const editUser = () => {
+const EditUser = () => {
     const context = useContext(UserContext)
+    console.log(context)
     const [open, setOpen] = useState(false)
     const [userData, setUserData] = useState({
-        firstN: '',
-        lastN: '',
+        id: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         address: '',
         phone: ''
-    });
+    })
 
     useEffect(() => {
         if (open) {
             setUserData({
-                firstN: context.user.firstN || '',
-                lastN: context.user.lastN || '',
-                email: context.user.email || '',
-                password: context.user.password || '',
+                id: context.user.id || '',
+                firstName: context.user.firstName || '',
+                lastName: context.user.lastName || '',
+                email: context.user.email,
+                password: context.user.password,
                 address: context.user.address || '',
                 phone: context.user.phone || ''
-            });
+            })
         }
-    }, [open, context.user]);
-    
-    const handleSubmit = () => {
+    }, [open, context.user])
+
+    const handleSubmit = async () => {
         setOpen(false)
-        context.userDispatch({ type: "EDIT_USER", data: userData })
+        try {
+            const res = await axios.put('http://localhost:3000/api/user/',
+                userData,
+                {
+                    headers: {
+                        'user-id': userData.id
+                    }
+                })
+            console.log(userData.password)
+            console.log(res.data.password)
+            context.userDispatch({ type: "EDIT_USER", data: { ...context.user, ...res.data } })
+        }
+        catch (err) {
+            console.log(err)
+            if (axios.isAxiosError(err) && err.response?.status === 404)
+                alert('user doesn\'t exist')
+        }
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +59,7 @@ const editUser = () => {
 
     return (
         <>
-            <Button onClick={() => { setOpen(true) }} variant="contained" color="primary" sx={{ marginTop: 1.5, marginLeft: 2 }}>Update</Button>
+            <Button onClick={() => { setOpen(true) }} variant="contained" color="inherit" sx={{ marginTop: 0, marginLeft: '2vw', width: '10vw', color: 'deepskyblue', fontWeight: 'bold' }}>Update</Button>
             <Modal
                 open={open}
                 onClose={() => { setOpen(false) }}
@@ -51,8 +71,8 @@ const editUser = () => {
                         <Typography variant="h5" align="center">Update your details</Typography>
                         <form>
                             <TextField
-                                name="firstN"
-                                value={userData.firstN}
+                                name="firstName"
+                                value={userData.firstName}
                                 onChange={handleInputChange}
                                 label="first name"
                                 variant="outlined"
@@ -60,8 +80,8 @@ const editUser = () => {
                                 margin="normal"
                             />
                             <TextField
-                                name="lastN"
-                                value={userData.lastN}
+                                name="lastName"
+                                value={userData.lastName}
                                 onChange={handleInputChange}
                                 label="last name"
                                 variant="outlined"
@@ -114,4 +134,4 @@ const editUser = () => {
         </>
     )
 }
-export default editUser
+export default EditUser

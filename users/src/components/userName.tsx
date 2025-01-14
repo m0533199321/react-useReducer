@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react"
-import { UserContext } from "./home"
+import { UserContext } from "./Home"
 import { Avatar, Typography } from "@mui/material"
 
-const userName = () => {
+const UserName = () => {
     const context = useContext(UserContext)
     const [lastN, setLastN] = useState('')
     const [firstN, setFirstN] = useState('')
@@ -10,18 +10,44 @@ const userName = () => {
 
     useEffect(() => {
         if (context.user) {
-            setLastN(context.user.lastN ? context.user.lastN.toString() : '')
-            setFirstN(context.user.firstN.toString())
-            setFirstL(firstN ? firstN[0] : '')
+            setLastN(context.user.lastName ? context.user.lastName.toString() : '')
+            setFirstN(context.user.firstName ? context.user.firstName.toString() : '')
+            setFirstL(context.user.firstName ? context.user.firstName[0] : '')
         }
     }, [context.user])
 
     return (
         <>
-            <Avatar sx={{ width: 56, height: 56, bgcolor: "deepskyblue", fontSize: 30, marginLeft: 4 }}>{firstL}</Avatar>
-            <Typography variant="h5" align="left" sx={{ marginTop: 2, marginLeft: 4 }}>{firstN} {lastN}</Typography>
+        <div style={{display:'inline-block', marginTop: '3vh', marginLeft:'5vw'}}>
+            <Avatar sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 65,
+                height: 65,
+                bgcolor: "deepskyblue",
+                fontSize: 40,
+                zIndex: 20
+            }}>
+                {firstL}
+            </Avatar>
+            </div>
+            <Typography
+                variant="h5"
+                sx={{
+                    display: 'inline-block',
+                    marginTop: 2,
+                    marginLeft: 5,
+                    fontWeight: 'bold',
+                    position: 'relative',
+                    zIndex: 30,
+                    color: 'deepskyblue'
+                }}
+            >
+                {firstN} {lastN}
+            </Typography>
         </>
     )
 }
 
-export default userName
+export default UserName
